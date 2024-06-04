@@ -1,0 +1,14 @@
+---
+- name: demo template
+  hosts: agent
+  become: yes
+  become_user: root
+  become_method: sudo
+  vars:
+    ansible_become_password: 300400
+  tasks:
+    - template:
+        src: ./test.j2
+        dest: /tmp/file.conf
+    
+      

@@ -1,0 +1,69 @@
+--- 
+- name: Install nginx
+  hosts: server-controller
+  vars:
+    server_name: test.com
+    proxy_host: 127.0.0.1
+    proxy_port: 8080
+  become: yes
+  tasks:
+    - name: update dependencies
+      apt: 
+        state: latest 
+        force_apt_get: yes
+---
+- name: Install nginx
+  hosts: server-controller  # Đổi `host` thành `hosts`
+  vars:
+    server_name: test.com
+    proxy_host: 127.0.0.1
+    proxy_port: 8080
+  become: yes
+  tasks:
+    - name: update dependencies
+      apt:
+        update_cache: yes  # Sử dụng `update_cache` để cập nhật danh sách gói
+        cache_valid_time: 3600  # Giữ cache hợp lệ trong 1 giờ
+        state: latest
+
+    - name: install nginx
+      apt:
+        name: nginx
+        state: latest
+
+    - name: ensure nginx is running
+      service:
+        name: nginx
+        state: started
+
+    - name: Deploy nginx config
+      template:
+        src: ./nginx.conf.j2
+        dest: /etc/nginx/sites-available/default
+      notify:
+        - reload nginx
+
+  handlers:
+    - name: reload nginx
+      service:
+        name: nginx
+        state: reloaded
+    - name: install nginx
+      apt: 
+        name: nginx 
+        state: latest
+      service:
+          name: nginx
+          state: started
+
+    - name: Deploy nginx config
+      template:
+        src: ./nginx.conf.j2
+        dest: /etc/nginx/sites-available/default
+      notify:
+        - reload nginx
+  handlers:
+    - name: reload nginx
+      service:
+        name: nginx
+        state: reloaded

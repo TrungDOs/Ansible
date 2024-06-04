@@ -1,0 +1,40 @@
+--- 
+- name: Install nginx
+  hosts: server-controller
+  become: yes
+  become_user: root
+  become_method: sudo
+  vars:
+    ansible_become_password: 300400
+    server_name: example.com
+    proxy_host: 192.168.80.100
+    proxy_port: 8080
+    nginx_port: 8080
+  tasks:
+    - name: update dependencies
+      apt:
+        update_cache: yes 
+        cache_valid_time: 3600
+        state: latest 
+
+    - name: install nginx
+      apt: 
+        name: nginx 
+        state: latest
+ 
+    - name: start nginx
+      service:
+        name: nginx
+        state: started
+
+    - name: Deploy nginx config
+      template:
+        src: ./nginx.conf.j2
+        dest: /etc/nginx/sites-available/default
+      notify:
+        - reload nginx
+  handlers:
+    - name: reload nginx
+      service:
+        name: nginx
+        state: reloaded

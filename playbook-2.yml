@@ -1,0 +1,14 @@
+---
+- name: Demo-2
+  hosts: all
+  tasks: 
+    - name: "ping module"
+      debug:
+        msg: "hello world!"
+    - debug:
+       var: https_ports['https']
+
+  vars:
+    https_ports:
+      http: 80 
+      https: 443

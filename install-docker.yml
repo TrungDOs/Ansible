@@ -1,0 +1,17 @@
+---
+- name: Install docker for agent
+  hosts: agent
+  become: yes
+  become_user: root
+  become_method: sudo
+  vars:
+    ansible_become_password: 300400
+  tasks:
+    - name: Install Docker
+      script: ./install-docker.sh
+      register: result
+
+    - name: Announcement
+      debug:
+        msg: "Installed Docker Succesfully!!!"
+      when: result.rc == 0

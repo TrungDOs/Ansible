@@ -1,0 +1,25 @@
+---
+- hosts: all
+  tasks:
+    - name: test ping
+      command:
+        cmd: ip a
+
+- name: install nginx on Agent
+  hosts: agent
+  become: yes
+  become_user: root
+  become_method: sudo
+  vars:
+    ansible_become_password: 300400 
+  tasks:
+    - name: update Dependience
+      apt: state=latest force_apt_get=yes 
+    - name: install nginx
+      apt: name=nginx state=latest
+    - name: start nginx
+      service:
+          name: nginx
+          state: started
+    - name: install git
+      apt: name=git state=latest
